@@ -19,6 +19,7 @@ const handlebars    = require('express-handlebars');
 const path          = require('path');
 const axios         = require('axios');
 const bodyparser    = require('body-parser');
+const mysql         = require('mysql');
 
 require('dotenv').config();
 
@@ -33,6 +34,26 @@ app.set('view engine', 'handlebars');
 app.set('views', './views');
 /*=====------------------------^ EXPRESS APP SETUP ^------------------------=====*/
 
+/*=====---------------------------v MYSQL SETUP v---------------------------=====*/
+// This project uses MariaDB as a drop-in for MySQL. MariaDB is running locally
+// through a Docker container (localhost:3307).
+const connection = mysql.createConnection({
+    host     : '127.0.0.1',
+    port     : 3307,
+    user     : `${process.env.MARIADB_USER}`,
+    password : `${process.env.MARIADB_PASS}`,
+    database : 'digital_cookbook'
+});
+/*=====---------------------------^ MYSQL SETUP ^---------------------------=====*/
+
+/*=====-------------------------v MYSQL FUNCTIONS v-------------------------=====*/
+/*********************************************************************************/
+/* FUNC   :                                                                      */
+/* PARAMS :                                                                      */
+/* RETURN :                                                                      */
+/*********************************************************************************/
+/*=====-------------------------^ MYSQL FUNCTIONS ^-------------------------=====*/
+
 /*=====----------------------------v API SETUP v----------------------------=====*/
 // This project uses the Edamam Recipe Search and Nutrition Analysis API.
 // API Documentation: https://developer.edamam.com/edamam-docs-recipe-api 
@@ -46,7 +67,8 @@ const credentials   = {
 /*=====--------------------------v API FUNCTIONS v--------------------------=====*/
 /*********************************************************************************/
 /* FUNC   : ApiTest                                                              */
-/* PARAMS :                                                                      */
+/* PARAMS : showDebug (bool) -> if true, the stacktrace and error information    */
+/*              will be output to the console.                                   */
 /* RETURN : The response code from an empty request to the Edamam Recipe Search  */
 /*          API. Used for testing purposes to verify connection to the service.  */
 /*********************************************************************************/
@@ -113,6 +135,33 @@ app.get('/apitest', async(req, res) => {
     res.render('apitest', {
         layout   : 'index',
         response : resStatus
+    });
+});
+
+/*********************************************************************************/
+/* ROUTE : GET '/dbtest'                                                         */
+/* DESC  : Attempts to connect to a local instance of MariaDB and writes the     */
+/*         connection status to the console.                                     */
+/*********************************************************************************/
+app.get('/dbtest', async(req, res) => {
+    console.log(`[${req.method} '${req.url}'] -> Route has been requested.`);
+    console.log(`[${req.method} '${req.url}'] -> This route is for testing the
+        MariaDB connection.`);
+        
+    connection.connect(function(err) {
+        try {
+            if (err) throw err;
+            console.log(
+            `[${req.method} '${req.url}'] -> Successfully connected to MariaDb.`);
+        }
+        catch (err) {
+            console.log(
+            `[${req.method} '${req.url}'] -> Failed to connect to MariaDb.`);
+        }
+    });
+
+    res.render('dbtest', {
+        layout  : 'index'
     });
 });
 /*=====---------------------------^ TEST ROUTES ^---------------------------=====*/
