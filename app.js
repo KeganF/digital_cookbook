@@ -29,7 +29,12 @@ const port  = 8080;
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(bodyparser.urlencoded({extended : true}));
 
-app.engine('handlebars', handlebars.engine());
+app.engine('handlebars', handlebars.engine({
+    extname         : 'handlebars',
+    defaultLayout   : 'main',
+    layoutsDir      : __dirname + '/views/layouts',
+    partialsDir     : __dirname + '/views/partials'
+}));
 app.set('view engine', 'handlebars');
 app.set('views', './views');
 /*=====------------------------^ EXPRESS APP SETUP ^------------------------=====*/
@@ -65,6 +70,33 @@ const credentials   = {
 /*=====----------------------------^ API SETUP ^----------------------------=====*/
 
 /*=====--------------------------v API FUNCTIONS v--------------------------=====*/
+/*********************************************************************************/
+/* FUNC   : GetRecipes                                                           */
+/* PARAMS : params (Object) -> an object containing the parameters for the API   */
+/*              request. This typically contains truthy values from the 'search' */
+/*              route's query string.                                            */
+/* RETURN : The data portion of the JSON response returned from the API.         */
+/*********************************************************************************/
+async function GetRecipes(params) {
+    // Add the required values to the parameters:
+    params.type     = 'public';
+    params.app_id   = credentials.appId;
+    params.app_key  = credentials.appKey;
+
+    try {
+        // Execute request to API:
+        const res = await axios({
+            method : 'GET',
+            url    : `${baseUrl}/recipes/v2`,
+            params : params
+        });
+        return res.data;
+    }
+    catch (AxiosError) {
+        return {error : AxiosError.code};
+    }
+}
+
 /*********************************************************************************/
 /* FUNC   : ApiTest                                                              */
 /* PARAMS : showDebug (bool) -> if true, the stacktrace and error information    */
@@ -102,13 +134,51 @@ async function ApiTest(showDebug) {
 /* DESC  : Renders the main index page.                                          */
 /*********************************************************************************/
 app.get('/', async(req, res) => {
-    console.log(`[${req.method} '${req.url}'] -> Route has been requested.`);
+    console.log(`${logHead(req)} Route has been requested.`);
     
+    // Render the 'main' (home) page to the browser:
     res.render('main', {
         layout : 'index'
     });
 });
 
+/*********************************************************************************/
+/* ROUTE : GET '/search'                                                         */
+/* DESC  : Renders the recipe search page.                                       */
+/*********************************************************************************/
+app.get('/search', async(req, res) => {
+    console.log(`${logHead(req)} Route has been requested.`);
+
+    // Get a list of parameters from the query string,
+    // but only where there is an assigned value:
+    const params = 
+        Object.fromEntries(Object.entries(req.query).filter(([k, v]) => v));
+    console.log(`${logHead(req)} Truthy params: ${JSON.stringify(params)}`);
+
+    var searchResults;
+
+    if (params.q) {
+        // Send the parameters to the API as part of a request:
+        const data = await GetRecipes(params);
+        
+        // Check for errors in the response:
+        if (data.error) {
+            console.log(`${logHeadErr(req)} API request failed: ${data.error}`);
+        }
+        else {
+            console.log(`${logHead(req)} Data received from API:`);
+            console.log(data);
+
+            searchResults = data.hits;
+        }
+    }
+
+    // Render the 'search' page to the browser:
+    res.render('search', {
+        layout  : 'index',
+        results : searchResults
+    });
+});
 /*=====---------------------------^ APP ROUTES ^----------------------------=====*/
 
 /*=====---------------------------v TEST ROUTES v---------------------------=====*/
@@ -118,20 +188,21 @@ app.get('/', async(req, res) => {
 /*         the page. Used to verify a successful connection to the service.      */
 /*********************************************************************************/
 app.get('/apitest', async(req, res) => {
-    console.log(`[${req.method} '${req.url}'] -> Route has been requested.`);
-    console.log(`[${req.method} '${req.url}'] -> This route is for testing the
+    console.log(`${logHead(req)} Route has been requested.`);
+    console.log(`${logHead(req)} This route is for testing the
         Edamam Recipe Search API. The browser should now be displaying the
         response status code received from the service. Response code 200 
         indicates a successful response.`);
 
     resStatus = await ApiTest(false);
 
-    // Failed response
+    // Output for failed response:
     if (resStatus != 200) {
-        console.log(`[${req.method} '${req.url}'] -> There was an error
+        console.log(`${logHeadErr(req)} There was an error
         receiving a response from the Edamam Recipe Search API (${resStatus}).`);
     }
 
+    // Render the 'apitest' page to the browser:
     res.render('apitest', {
         layout   : 'index',
         response : resStatus
@@ -144,27 +215,31 @@ app.get('/apitest', async(req, res) => {
 /*         connection status to the console.                                     */
 /*********************************************************************************/
 app.get('/dbtest', async(req, res) => {
-    console.log(`[${req.method} '${req.url}'] -> Route has been requested.`);
-    console.log(`[${req.method} '${req.url}'] -> This route is for testing the
+    console.log(`${logHead(req)} Route has been requested.`);
+    console.log(`${logHead(req)} This route is for testing the
         MariaDB connection.`);
         
     connection.connect(function(err) {
         try {
             if (err) throw err;
-            console.log(
-            `[${req.method} '${req.url}'] -> Successfully connected to MariaDb.`);
+            console.log(`${logHead(req)} Successfully connected to MariaDb.`);
         }
         catch (err) {
-            console.log(
-            `[${req.method} '${req.url}'] -> Failed to connect to MariaDb.`);
+            console.log(`${logHeadErr(req)} Failed to connect to MariaDb.`);
         }
     });
 
+    // Render the 'dbtest' page to the browser:
     res.render('dbtest', {
         layout  : 'index'
     });
 });
 /*=====---------------------------^ TEST ROUTES ^---------------------------=====*/
+
+/*=====-------------------------v LOGGING UTILITY v-------------------------=====*/
+const logHead    = (req) => `\x1b[32m[${req.method} '${req.path}'] ->\x1b[0m`;
+const logHeadErr = (req) => `\x1b[31m[${req.method} '${req.path}'] ->\x1b[0m`;
+/*=====-------------------------^ LOGGING UTILITY ^-------------------------=====*/
 
 /*=====---------------------------v APP STARTUP v---------------------------=====*/
 app.listen(port, () => {
