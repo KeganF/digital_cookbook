@@ -1,11 +1,16 @@
 {{!-- search_area partial  --}}
-<div class="container-fluid">
-    <form class="d-flex flex-column justify-content-center align-items-center" style="height:300px;">
-        <input class="form-control" name="q" type="search" placeholder="Search for recipes, ingredients, dishes, and more">
-        <button class="btn btn-warning" type="submit">Search</button>
+<div class="container-fluid search-background">
+    <form class="d-flex flex-column justify-content-center align-items-center" style="height:400px;row-gap:1.5rem;">
 
+        {{!-- Search Bar --}}
+        <div class="search-bar-container d-flex p-1">
+            <input class="main-search" name="q" type="search" placeholder="Search for recipes, ingredients, dishes, and more">
+            <button class="btn btn-primary">Search</button>
+        </div>
+
+        {{!-- Parameter Dropdowns Container --}}
         <div class="d-flex flex-row" style="column-gap:0.5em">
-            <select name="meal_type" style="width:22ch;">
+            <select class="select" name="meal_type" style="width:22ch;">
                 <option value="">Meal Type</option>
                 <option value="breakfast">Breakfast</option>
                 <option value="lunch">Lunch</option>
@@ -14,7 +19,7 @@
                 <option value="teatime">Teatime</option>
             </select>
 
-            <select name="dish" style="width:22ch;">
+            <select class="select" name="dish" style="width:22ch;">
                 <option value="">Dish</option>
                 <option value="Buscuits and cookies">Biscuits and Cookies</option>
                 <option value="Bread">Bread</option>
@@ -34,7 +39,7 @@
                 <option value="Sweets">Sweets</option>
             </select>
 
-            <select name="diet" style="width:22ch;">
+            <select class="select" name="diet" style="width:22ch;">
                 <option value="">Diet</option>
                 <option value="balanced">Balanced</option>
                 <option value="high-fiber">High Fiber</option>
@@ -44,7 +49,7 @@
                 <option value="low-sodium">Low Sodium</option>
             </select>
 
-            <select name="cuisine" style="width:22ch;">
+            <select class="select" name="cuisine" style="width:22ch;">
                 <option value="">Cusine</option>
                 <option value="American">American</option>
                 <option value="Asian">Asian</option>
@@ -66,11 +71,10 @@
                 <option value="South East Asian">South East Asian</option>
             </select>
 
-            <select name="ingredient" style="width:22ch;">
+            {{!-- <select name="ingredient" style="width:22ch;">
                 <option value="">Ingredient</option>
                 <option value=""></option>
-            </select>
+            </select> --}}
         </div>
-
     </form>
 </div>

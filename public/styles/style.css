@@ -1,0 +1,81 @@
+
+/* Override Bootstrap badge-primary class */
+.badge-primary {
+    background-color: hsl(46, 100%, 50%);
+}
+
+/* Override Bootstrap btn-primary class */
+.btn-primary {
+    background-color: hsl(46, 100%, 50%);
+    border: none;
+    border-radius: 2rem;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+/* Override Bootstrap nav-link class */
+.nav-link {
+    text-transform: uppercase;
+    font-weight: bold; 
+}
+
+/* Blurred background image for the search area */
+.search-background {
+    /* Darkens the image slightly */
+    background-color: hsla(0, 0%, 0%, 0.4);
+    overflow: hidden;
+    position:relative;
+}
+.search-background:before {
+    content: "";
+    position: absolute;
+    /* -10px accomodates for the white edges that result from the blur() value */
+    left: -10px;
+    width: 110%;
+    height: 100%;
+    /* Sets the actual background image */
+    background-image: url("/images/search-background-2.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+    /* Applies blur to the image */
+    filter: blur(4px);
+    -moz-filter: blur(4px);
+    -webkit-filter: blur(4px);
+    -o-filter: blur(4px);
+}
+
+/* Container that surrounds the search bar and search button */
+.search-bar-container {
+    background: hsl(0, 0%, 100%);
+    border: 1px solid hsl(0, 0%, 68%);
+    border-radius: 2rem;
+}
+
+/* The main search bar within the container */
+.main-search {
+    background: none;
+    width: 675px;
+    border: none;
+    margin-left: 0.5rem;
+}
+.main-search:focus-within {
+    outline: none;
+}
+
+select {
+    /* Clears the default appearance of the select element */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: white;
+    /* Uses an SVG to create a custom red dropdown arrow */
+    background-image: url("data:image/svg+xml;utf8,<svg fill='red' height='26' viewBox='0 0 26 26' width='26' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h26v26H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position-x: 100%;
+    background-position-y: 4px;
+    border: 1px solid hsl(0, 0%, 68%);
+    border-radius: 2rem;
+    padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+}

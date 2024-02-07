@@ -62,11 +62,25 @@ const connection = mysql.createConnection({
 /*=====----------------------------v API SETUP v----------------------------=====*/
 // This project uses the Edamam Recipe Search and Nutrition Analysis API.
 // API Documentation: https://developer.edamam.com/edamam-docs-recipe-api 
-const baseUrl       = 'https://api.edamam.com/api';
+const baseURL       = 'https://api.edamam.com/api';
 const credentials   = {
     appId  : `${process.env.EDAMAM_API_APP_ID}`, 
     appKey : `${process.env.EDAMAM_API_APP_KEY}`
 };
+// Creates a reusable instance of Axios with pre-defined values.
+// Requests to the API will not have to re-supply these values :-)
+const instance = axios.create({
+    baseURL : baseURL,
+    timeout : 5000,
+    headers : {
+        'Content-Type' : 'application/json'
+    },
+    params  : {
+        type    : 'public',
+        app_id  : credentials.appId,
+        app_key : credentials.appKey
+    }
+});
 /*=====----------------------------^ API SETUP ^----------------------------=====*/
 
 /*=====--------------------------v API FUNCTIONS v--------------------------=====*/
@@ -75,26 +89,17 @@ const credentials   = {
 /* PARAMS : params (Object) -> an object containing the parameters for the API   */
 /*              request. This typically contains truthy values from the 'search' */
 /*              route's query string.                                            */
-/* RETURN : The data portion of the JSON response returned from the API.         */
+/* RETURN : The data portion of the JSON response returned from the API, OR the  */
+/*          the Axios error object in the event of a failed request.             */
 /*********************************************************************************/
 async function GetRecipes(params) {
-    // Add the required values to the parameters:
-    params.type     = 'public';
-    params.app_id   = credentials.appId;
-    params.app_key  = credentials.appKey;
-
-    try {
-        // Execute request to API:
-        const res = await axios({
-            method : 'GET',
-            url    : `${baseUrl}/recipes/v2`,
-            params : params
+    return instance.get('/recipes/v2', {params : params})
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            return {error : error};
         });
-        return res.data;
-    }
-    catch (AxiosError) {
-        return {error : AxiosError.code};
-    }
 }
 
 /*********************************************************************************/
@@ -105,26 +110,13 @@ async function GetRecipes(params) {
 /*          API. Used for testing purposes to verify connection to the service.  */
 /*********************************************************************************/
 async function ApiTest(showDebug) {    
-    try {
-        const res = await axios({
-            method : 'GET',
-            url    : `${baseUrl}/recipes/v2`,
-            params : {
-                type    : 'public',
-                app_id  : credentials.appId,
-                app_key : credentials.appKey
-            }
+    return instance.get('/recipes/v2')
+        .then(response => {
+            return response.status;
+        })
+        .catch(error => {
+            return {error : error};
         });
-
-        return res.status;
-    }
-    catch (AxiosError) {
-        if (showDebug) {
-            console.log(AxiosError);
-        }
-
-        return AxiosError.code;
-    }
 }
 /*=====--------------------------^ API FUNCTIONS ^--------------------------=====*/
 
@@ -155,7 +147,7 @@ app.get('/search', async(req, res) => {
         Object.fromEntries(Object.entries(req.query).filter(([k, v]) => v));
     console.log(`${logHead(req)} Truthy params: ${JSON.stringify(params)}`);
 
-    var searchResults;
+    var resultRecipes;
 
     if (params.q) {
         // Send the parameters to the API as part of a request:
@@ -166,17 +158,26 @@ app.get('/search', async(req, res) => {
             console.log(`${logHeadErr(req)} API request failed: ${data.error}`);
         }
         else {
-            console.log(`${logHead(req)} Data received from API:`);
-            console.log(data);
+            console.log(`${logHead(req)} Data received from API!`);
+            
+            resultRecipes = data.hits;
+            // Loop through each returned element for processing:
+            resultRecipes.forEach(item => {
+                // Trim "tags" array to have only 3 elements max:
+                if (item.recipe.tags)
+                    item.recipe.tags.length = 3;
 
-            searchResults = data.hits;
+                // Add an recipeID key to the recipe object:
+                item.recipe.recipeID = item.recipe.uri.split('#')[1];
+            });
         }
     }
 
     // Render the 'search' page to the browser:
     res.render('search', {
         layout  : 'index',
-        results : searchResults
+        results : resultRecipes,
+        search  : params.q
     });
 });
 /*=====---------------------------^ APP ROUTES ^----------------------------=====*/
