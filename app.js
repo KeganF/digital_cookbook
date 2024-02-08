@@ -13,22 +13,38 @@
 /* //           -> Inline code comments, explanations, contextual information    */  
 /*===============================================================================*/
 
+/*====================================app.js=====================================*/
 /*=====------------------------v EXPRESS APP SETUP v------------------------=====*/
+// Include external modules
 const express       = require('express');
 const handlebars    = require('express-handlebars');
 const path          = require('path');
 const axios         = require('axios');
 const bodyparser    = require('body-parser');
-const mysql         = require('mysql');
+const cookieParser  = require('cookie-parser');
 
+// Include internal modules
+const mongooseCon = require('./db');
+const { 
+    adminAuth, 
+    userAuth
+} = require ('./middleware/auth');
+
+// Get access to .env file variables
 require('dotenv').config();
 
+// Create `app` and set the port for the server
 const app   = express();
 const port  = 8080;
 
+// Bind middleware to `app` object
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(bodyparser.urlencoded({extended : true}));
+app.use(express.json());
+app.use('/api/auth', require('./auth/route'));
+app.use(cookieParser());
 
+// Configure handlebars templating engine
 app.engine('handlebars', handlebars.engine({
     extname         : 'handlebars',
     defaultLayout   : 'main',
@@ -37,27 +53,10 @@ app.engine('handlebars', handlebars.engine({
 }));
 app.set('view engine', 'handlebars');
 app.set('views', './views');
+
+// Connect to MongoDB (db.js) 
+mongooseCon.connectDB();
 /*=====------------------------^ EXPRESS APP SETUP ^------------------------=====*/
-
-/*=====---------------------------v MYSQL SETUP v---------------------------=====*/
-// This project uses MariaDB as a drop-in for MySQL. MariaDB is running locally
-// through a Docker container (localhost:3307).
-const connection = mysql.createConnection({
-    host     : '127.0.0.1',
-    port     : 3307,
-    user     : `${process.env.MARIADB_USER}`,
-    password : `${process.env.MARIADB_PASS}`,
-    database : 'digital_cookbook'
-});
-/*=====---------------------------^ MYSQL SETUP ^---------------------------=====*/
-
-/*=====-------------------------v MYSQL FUNCTIONS v-------------------------=====*/
-/*********************************************************************************/
-/* FUNC   :                                                                      */
-/* PARAMS :                                                                      */
-/* RETURN :                                                                      */
-/*********************************************************************************/
-/*=====-------------------------^ MYSQL FUNCTIONS ^-------------------------=====*/
 
 /*=====----------------------------v API SETUP v----------------------------=====*/
 // This project uses the Edamam Recipe Search and Nutrition Analysis API.
@@ -86,6 +85,7 @@ const instance = axios.create({
 /*=====--------------------------v API FUNCTIONS v--------------------------=====*/
 /*********************************************************************************/
 /* FUNC   : GetRecipes                                                           */
+/* DESC   : Sends a request to the Edamam Recipe search API.                     */
 /* PARAMS : params (Object) -> an object containing the parameters for the API   */
 /*              request. This typically contains truthy values from the 'search' */
 /*              route's query string.                                            */
@@ -104,12 +104,12 @@ async function GetRecipes(params) {
 
 /*********************************************************************************/
 /* FUNC   : ApiTest                                                              */
-/* PARAMS : showDebug (bool) -> if true, the stacktrace and error information    */
-/*              will be output to the console.                                   */
-/* RETURN : The response code from an empty request to the Edamam Recipe Search  */
-/*          API. Used for testing purposes to verify connection to the service.  */
+/* DESC   : Sends an empty request to the Edamam Recipe Search API to confirm    */
+/*          the application can successfully communicate with the API.           */
+/* PARAMS : N/A.                                                                 */
+/* RETURN : The response code received from the API.                             */
 /*********************************************************************************/
-async function ApiTest(showDebug) {    
+async function ApiTest() {    
     return instance.get('/recipes/v2')
         .then(response => {
             return response.status;
@@ -121,6 +121,8 @@ async function ApiTest(showDebug) {
 /*=====--------------------------^ API FUNCTIONS ^--------------------------=====*/
 
 /*=====---------------------------v APP ROUTES v----------------------------=====*/
+// app.get('/admin', adminAuth, (req, res) => res.send('Admin Route'));
+// app.get('/basic', userAuth,  (req, res) => res.send('User Route'));
 /*********************************************************************************/
 /* ROUTE : GET '/'                                                               */
 /* DESC  : Renders the main index page.                                          */
@@ -180,6 +182,18 @@ app.get('/search', async(req, res) => {
         search  : params.q
     });
 });
+
+app.get('/register', async(req, res) => {
+    res.render('register', {
+        layout : 'index'
+    });
+});
+
+app.get('/login', async(req, res) => {
+    res.render('login', {
+        layout : 'index'
+    });
+});
 /*=====---------------------------^ APP ROUTES ^----------------------------=====*/
 
 /*=====---------------------------v TEST ROUTES v---------------------------=====*/
@@ -212,23 +226,14 @@ app.get('/apitest', async(req, res) => {
 
 /*********************************************************************************/
 /* ROUTE : GET '/dbtest'                                                         */
-/* DESC  : Attempts to connect to a local instance of MariaDB and writes the     */
-/*         connection status to the console.                                     */
+/* DESC  : Checks the connection status of `mongoose` object in ./db.js          */
 /*********************************************************************************/
 app.get('/dbtest', async(req, res) => {
     console.log(`${logHead(req)} Route has been requested.`);
     console.log(`${logHead(req)} This route is for testing the
-        MariaDB connection.`);
-        
-    connection.connect(function(err) {
-        try {
-            if (err) throw err;
-            console.log(`${logHead(req)} Successfully connected to MariaDb.`);
-        }
-        catch (err) {
-            console.log(`${logHeadErr(req)} Failed to connect to MariaDb.`);
-        }
-    });
+        MongoDB connection.`);
+       
+    mongooseCon.checkConnection();
 
     // Render the 'dbtest' page to the browser:
     res.render('dbtest', {
@@ -243,9 +248,13 @@ const logHeadErr = (req) => `\x1b[31m[${req.method} '${req.path}'] ->\x1b[0m`;
 /*=====-------------------------^ LOGGING UTILITY ^-------------------------=====*/
 
 /*=====---------------------------v APP STARTUP v---------------------------=====*/
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`App is listening on port ${port}.`);
 });
-/*=====---------------------------^ APP STARTUP ^---------------------------=====*/
 
-/*=====---------------------------------------------------------------------=====*/
+process.on('unhandledRejection', err => {
+    console.log(`An error occurred: ${err.message}`);
+    server.close(() => process.exit(1));
+});
+/*=====---------------------------^ APP STARTUP ^---------------------------=====*/
+/*====================================app.js=====================================*/
