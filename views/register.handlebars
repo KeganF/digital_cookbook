@@ -1,8 +1,6 @@
 <h1>Register</h1>
 <form>
     <div class="error"></div>
-    <label for="email">Email</label>
-    <input type="text" id="email" required />
     <label for="username">Username</label>
     <input type="text" id="username" required />
     <label for="password">Password</label>
@@ -24,7 +22,7 @@
         try {
             const res = await fetch('/api/auth/register', {
                 method  : 'POST',
-                body    : JSON.stringify({ email : email.value, username : username.value, password : password.value }),
+                body    : JSON.stringify({ username : username.value, password : password.value }),
                 headers : { 'Content-Type' : 'application/json' }
             });
             const data = await res.json();

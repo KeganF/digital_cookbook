@@ -10,9 +10,6 @@
 // Include external modules
 const jwt = require('jsonwebtoken');
 
-// Retrieve secret string from .env variable
-const jwtSecret = `${process.env.JWT_SECRET}`;
-
 /*********************************************************************************/
 /* FUNC   : adminAuth                                                            */
 /* DESC   : Requests a token from the client and verifies the received token.    */
@@ -30,7 +27,7 @@ exports.adminAuth = (req, res, next) => {
             message : 'Not authorized, token not available'
         });
 
-    jwt.verify(token, jwtSecret, (err, decodedToken) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
         if (err)
             return res.status(401).json({ message : 'Not authorized' });
         
@@ -40,50 +37,6 @@ exports.adminAuth = (req, res, next) => {
         next();
     });
 };
-
-
-// exports.adminAuth = (req, res, next) => {
-//     const token = req.cookies.jwt;
-
-//     if (!token)
-//         return res.status(401).json({
-//             message : 'Not authorized, token not available'
-//         });
-
-//     jwt.verify(token, jwtSecret, (err, decodedToken) => {
-//         if (err)
-//             return res.status(401).json({ message : 'Not authorized' });
-//         else
-//             if (decodedToken.role !== 'admin')
-//                 return res.status(401).json({ message : 'Not authorized' });
-//             else
-//                 next();
-//     });
-// };
-
-// exports.adminAuth = (req, res, next) => {
-//     const token = req.cookies.jwt;
-//     if (token) {
-//         jwt.verify(token, jwtSecret, (error, decodedToken) => {
-//             if (error) {
-//                 return res.status(401).json({ message : 'Not authorized' });
-//             }
-//             else {
-//                 if (decodedToken.role !== 'admin') {
-//                     return res.status(401).json({ message : 'Not authorized' });
-//                 }
-//                 else {
-//                     next();
-//                 }
-//             }
-//         });
-//     }
-//     else {
-//         return res.status(401).json({ 
-//             message : 'Not authorized, token not available' 
-//         });
-//     }
-// }
 
 /*********************************************************************************/
 /* FUNC   : userAuth                                                             */
@@ -102,7 +55,7 @@ exports.userAuth = (req, res, next) => {
             message : 'Not authorized, token not available'
         });
 
-    jwt.verify(token, jwtSecret, (err, decodedToken) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
         if (err)
             return res.status(401).json({ message : 'Not authorized' });
 
@@ -112,47 +65,4 @@ exports.userAuth = (req, res, next) => {
         next();
     });
 };
-
-// exports.userAuth = (req, res, next) => {
-//     const token = req.cookies.jwt;
-
-//     if (!token)
-//         return res.status(401).json({
-//             message : 'Not authorized, token not available'
-//         });
-
-//     jwt.verify(token, jwtSecret, (err, decodedToken) => {
-//         if (err)
-//             return res.status(401).json({ message : 'Not authorized' });
-//         else
-//             if (decodedToken.role !== 'basic')
-//                 return res.status(401).json({ message : 'Not authorized' });
-//             else
-//                 next();
-//     });
-// };
-
-// exports.userAuth = (req, res, next) => {
-//     const token = req.cookies.jwt;
-//     if (token) {
-//         jwt.verify(token, jwtSecret, (error, decodedToken) => {
-//             if (error) {
-//                 return res.status(401).json({ message : 'Not authorized' });
-//             }
-//             else {
-//                 if (decodedToken.role !== 'Basic') {
-//                     return res.status(401).json({ message : 'Not authorized' });
-//                 }
-//                 else {
-//                     next();
-//                 }
-//             }
-//         });
-//     }
-//     else {
-//         return res.status(401).json({ 
-//             message : 'Not authorized, token not available' 
-//         });
-//     }
-// }
 /*=============================auth.js (middleware)==============================*/

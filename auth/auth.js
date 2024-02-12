@@ -11,9 +11,6 @@ const jwt       = require('jsonwebtoken');
 // Include internal modules
 const user      = require('../models/user');
 
-// Retrieve secret string from .env variable
-const jwtSecret = `${process.env.JWT_SECRET}`;
-
 /*********************************************************************************/
 /* FUNC   : register                                                             */
 /* DESC   : Attempts to register a new user in the database using the values     */
@@ -23,29 +20,31 @@ const jwtSecret = `${process.env.JWT_SECRET}`;
 /*          or status 400 if the user creation failed.                           */
 /*********************************************************************************/
 exports.register = async (req, res, next) => {
-    const { username, email, password } = req.body;
-    if (password.length < 6) {
+    const { username, password } = req.body;
+    
+    if (password.length < 6)
         return res.status(400).json({ 
-            message : 'Password less than 6 characters.' 
+            message : 'Password must be at least 6 characters.' 
         });
-    }
-
+    
     // Encrypt password so it's not stored as plain text in the DB
     bcrypt.hash(password, 10).then(async (hash) => {
         await user.create({
             username,
-            email,
             password : hash
         }).then((_user) => {
+            // Create a JWT Token to verify the user
             const maxAge = 3 * 60 * 60;
             const token  = jwt.sign({
-                id : _user._id,
-                username
+                id   : _user._id,
+                username,
+                role : _user.role
             },
-            jwtSecret,
+            process.env.JWT_SECRET,
             {
                 expiresIn : maxAge // 3 hrs in sec
             });
+            // Create a cookie for the JWT Token
             res.cookie('jwt', token, {
                 httpOnly : true,
                 maxAge   : maxAge * 1000 // 3 hrs in ms
@@ -94,10 +93,11 @@ exports.login = async (req, res, next) => {
                 if (result) {
                     const maxAge = 3 * 60 * 60;
                     const token  = jwt.sign({
-                        id : _user._id,
-                        username
+                        id   : _user._id,
+                        username,
+                        role : _user.role
                     },
-                    jwtSecret,
+                    process.env.JWT_SECRET,
                     {
                         expiresIn : maxAge
                     });
