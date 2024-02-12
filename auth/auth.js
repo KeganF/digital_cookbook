@@ -91,6 +91,7 @@ exports.login = async (req, res, next) => {
             // Compare supplied password with hashed password
             bcrypt.compare(password, _user.password).then(function (result) {
                 if (result) {
+                    // Create a JWT Token to verify the user
                     const maxAge = 3 * 60 * 60;
                     const token  = jwt.sign({
                         id   : _user._id,
@@ -101,6 +102,7 @@ exports.login = async (req, res, next) => {
                     {
                         expiresIn : maxAge
                     });
+                    // Create a cookie for the JWT Token
                     res.cookie('jwt', token, {
                         httpOnly : true,
                         maxAge   : maxAge * 1000

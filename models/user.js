@@ -1,3 +1,9 @@
+/*===============================================================================*/
+/* FILE : user.js (./models/auth.js)                                             */
+/* DESC : This file contains the 'user' model to represent the 'user' documents  */
+/*        in the MongoDB collection.                                             */
+/*===============================================================================*/
+
 /*====================================user.js====================================*/
 const mongoose   = require('mongoose');
 const userSchema = new mongoose.Schema({

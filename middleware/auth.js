@@ -65,4 +65,32 @@ exports.userAuth = (req, res, next) => {
         next();
     });
 };
+
+/*********************************************************************************/
+/* FUNC   : checkUser                                                            */
+/* DESC   : Requests a token from the client and verifies the received token.    */
+/*          The token will be used to track the current logged in user by        */
+/*          storing the username (from the decoded token) in a res.locals value. */
+/*          The new res.locals value can then be used to display the name of the */
+/*          current user in the navbar, for example.                             */
+/* PARAMS : N/A.                                                                 */
+/* RETURN : N/A.                                                                 */
+/*********************************************************************************/
+exports.checkUser = (req, res, next) => {
+    const token = req.cookies.jwt;
+
+    if (!token) {
+        res.locals.currentUser = null;
+        return next();
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+        if (err)
+            res.locals.currentUser = null;
+        else
+            res.locals.currentUser = decodedToken.username;
+
+        next();
+    });
+};
 /*=============================auth.js (middleware)==============================*/

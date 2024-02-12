@@ -19,5 +19,18 @@
       </li>
     </ul>
   </div>
-  <a class="nav-item nav-link" href="/login">Login</a>
+  <ul class="navbar-nav">
+    {{#if currentUser}}
+      <li class="nav-item">
+        <a class="nav-link" href="#">{{currentUser}}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/logout">Log out</a>
+      </li>
+    {{else}}
+      <li class="nav-item">
+        <a class="nav-link" href="/login">Login</a>
+      </li>
+    {{/if}}
+  </ul>
 </nav>

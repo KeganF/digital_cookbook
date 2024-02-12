@@ -27,7 +27,8 @@ const cookieParser  = require('cookie-parser');
 const mongooseCon = require('./db');
 const { 
     adminAuth, 
-    userAuth
+    userAuth,
+    checkUser
 } = require ('./middleware/auth');
 
 // Get access to .env file variables
@@ -123,6 +124,16 @@ async function ApiTest() {
 /*=====---------------------------v APP ROUTES v----------------------------=====*/
 // app.get('/admin', adminAuth, (req, res) => res.send('Admin Route'));
 // app.get('/basic', userAuth,  (req, res) => res.send('User Route'));
+
+
+/*********************************************************************************/
+/* ROUTE : GET '*'                                                               */
+/* DESC  : '*' denotes ALL GET REQUESTS. Every route in the app requested using  */
+/*         the GET method will first be directed here, where the checkUser       */
+/*         middleware will be used to determine the current logged in user.      */
+/*********************************************************************************/
+app.get('*', checkUser);
+
 /*********************************************************************************/
 /* ROUTE : GET '/'                                                               */
 /* DESC  : Renders the main index page.                                          */
@@ -140,7 +151,7 @@ app.get('/', async(req, res) => {
 /* ROUTE : GET '/search'                                                         */
 /* DESC  : Renders the recipe search page.                                       */
 /*********************************************************************************/
-app.get('/search', async(req, res) => {
+app.get('/search', userAuth, async(req, res) => {
     console.log(`${logHead(req)} Route has been requested.`);
 
     // Get a list of parameters from the query string,
@@ -193,6 +204,11 @@ app.get('/login', async(req, res) => {
     res.render('login', {
         layout : 'index'
     });
+});
+
+app.get('/logout', async(req, res) => {
+    res.cookie('jwt', '', { maxAge : '1' });
+    res.redirect('/');
 });
 /*=====---------------------------^ APP ROUTES ^----------------------------=====*/
 
