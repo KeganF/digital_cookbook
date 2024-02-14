@@ -94,12 +94,12 @@ const instance = axios.create({
 /*          the Axios error object in the event of a failed request.             */
 /*********************************************************************************/
 async function GetRecipes(params) {
-    return instance.get('/recipes/v2', {params : params})
+    return instance.get('/recipes/v2', { params : params })
         .then(response => {
             return response.data;
         })
         .catch(error => {
-            return {error : error};
+            return { error : error };
         });
 }
 
@@ -116,7 +116,7 @@ async function ApiTest() {
             return response.status;
         })
         .catch(error => {
-            return {error : error};
+            return { error : error };
         });
 }
 /*=====--------------------------^ API FUNCTIONS ^--------------------------=====*/
@@ -209,6 +209,15 @@ app.get('/login', async(req, res) => {
 app.get('/logout', async(req, res) => {
     res.cookie('jwt', '', { maxAge : '1' });
     res.redirect('/');
+});
+
+app.get('/account', async(req, res) => {
+    const id = res.locals.currentUser.id;
+    console.log(id);
+    
+    res.render('account', {
+        layout : 'index'
+    });
 });
 /*=====---------------------------^ APP ROUTES ^----------------------------=====*/
 

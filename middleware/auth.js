@@ -88,7 +88,11 @@ exports.checkUser = (req, res, next) => {
         if (err)
             res.locals.currentUser = null;
         else
-            res.locals.currentUser = decodedToken.username;
+            res.locals.currentUser = { 
+                name : decodedToken.username, 
+                id   : decodedToken.id 
+            };
+            //res.locals.currentUser = decodedToken.username;
 
         next();
     });
