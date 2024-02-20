@@ -1,40 +1,22 @@
 {{!-----------------------------register.handlebars------------------------------}}
-<h1>Register</h1>
-<form>
-    <div class="error"></div>
-    <label for="username">Username</label>
-    <input type="text" id="username" required />
-    <label for="password">Password</label>
-    <input type="password" id="password" required />
-    <input type="submit" value="Register">
-</form>
-<a href="/login">Already have an account? Login</a>
+<div class="d-flex align-items-center justify-content-center" style="min-height:100vh;">
+    <div class="card p-4">
+        <h1 class="text-center">Register</h1>
+        <form class="d-flex flex-column" style="gap:0.5rem;">
+            <div class="error"></div>
+            <div>
+                <label for="username">Username</label>
+                <input class="form-control" type="text" id="username" required />
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input class="form-control" type="password" id="password" required />
+            </div>
+            <input class="btn btn-primary mt-2" type="submit" value="Register">
+        </form>
+        <a href="/login">Already have an account? Login here!</a>
+    </div>
+</div>
 
-<script>
-    const form = document.querySelector('form');
-    const email = document.querySelector('#email');
-    const username = document.querySelector('#username');
-    const password = document.querySelector('#password');
-    const display  = document.querySelector('.error');
-
-    form.addEventListener('submit', async(e) => {
-        e.preventDefault();
-        display.textContent = '';
-        try {
-            const res = await fetch('/api/auth/register', {
-                method  : 'POST',
-                body    : JSON.stringify({ username : username.value, password : password.value }),
-                headers : { 'Content-Type' : 'application/json' }
-            });
-            const data = await res.json();
-            if (res.status === 400 || res.status === 401) {
-                return display.textContent = `${data.message}. ${data.error ? data.error : ''}`;
-            }
-            data.role === 'admin' ? location.assign('/') : location.assign('/');
-        }
-        catch (error) {
-            console.log(error.message);
-        }
-    });
-</script>
+<script src="./js/register.js"></script>
 {{!------------------------------------------------------------------------------}}

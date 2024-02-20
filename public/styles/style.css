@@ -73,6 +73,12 @@
     outline: none;
 }
 
+/* Additional styling for Bootstrap form-control class */
+.form-control {
+    border-radius: 2rem;
+}
+
+/* Custom styling for select elements (search area partial) */
 select {
     /* Clears the default appearance of the select element */
     appearance: none;
