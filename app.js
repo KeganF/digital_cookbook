@@ -180,7 +180,7 @@ app.get('/search', userAuth, async(req, res) => {
                 if (item.recipe.tags)
                     item.recipe.tags.length = 3;
 
-                // Add an recipeID key to the recipe object:
+                // Add a recipeID key to the recipe object:
                 item.recipe.recipeID = item.recipe.uri.split('#')[1];
             });
         }
