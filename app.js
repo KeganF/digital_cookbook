@@ -143,7 +143,8 @@ app.get('/', async(req, res) => {
     
     // Render the 'main' (home) page to the browser:
     res.render('main', {
-        layout : 'index'
+        layout : 'index',
+        active : { home : true }
     });
 });
 
@@ -190,7 +191,8 @@ app.get('/search', userAuth, async(req, res) => {
     res.render('search', {
         layout  : 'index',
         results : resultRecipes,
-        search  : params.q
+        search  : params.q,
+        active  : { search : true }
     });
 });
 

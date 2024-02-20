@@ -5,16 +5,16 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
-      <li class="nav-item">
+      <li class="nav-item {{#if active.home}}active{{/if}}">
         <a class="nav-link" href="/">Home</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item {{#if active.search}}active{{/if}}">
         <a class="nav-link" href="/search">Search</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item {{#if active.collections}}active{{/if}}">
         <a class="nav-link disabled" href="#">Collections</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item {{#if active.about}}active{{/if}}">
         <a class="nav-link disabled" href="#">About</a>
       </li>
     </ul>
