@@ -92,8 +92,7 @@ exports.checkUser = (req, res, next) => {
                 name : decodedToken.username, 
                 id   : decodedToken.id 
             };
-            //res.locals.currentUser = decodedToken.username;
-
+            
         next();
     });
 };
