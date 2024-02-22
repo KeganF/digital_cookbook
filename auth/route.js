@@ -16,7 +16,7 @@ const { adminAuth }       = require('../middleware/auth');
 const router = express.Router();
 
 router.use((req, res, next) => {
-    console.log(`\x1b[${req.method} '${req.path}'] ->\x1b[0m Route Requested`);
+    console.log(`\x1b[32m[${req.method} '${req.path}'] ->\x1b[0m Route Requested`);
     next();
 });
 
