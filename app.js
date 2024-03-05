@@ -30,6 +30,7 @@ const {
     userAuth,
     checkUser
 } = require ('./middleware/auth');
+const user = require('./models/user');
 
 // Get access to .env file variables
 require('dotenv').config();
@@ -50,7 +51,10 @@ app.engine('handlebars', handlebars.engine({
     extname         : 'handlebars',
     defaultLayout   : 'main',
     layoutsDir      : __dirname + '/views/layouts',
-    partialsDir     : __dirname + '/views/partials'
+    partialsDir     : __dirname + '/views/partials',
+    helpers         : {
+        includes : function(needle, haystack) { return haystack.indexOf(needle) > -1; }
+    }
 }));
 app.set('view engine', 'handlebars');
 app.set('views', './views');
@@ -140,11 +144,46 @@ app.get('*', checkUser);
 /*********************************************************************************/
 app.get('/', async(req, res) => {
     console.log(`${logHead(req)} Route has been requested.`);
+
+    var _user = null;
+    if (res.locals.currentUser)
+        _user = await user.findById(res.locals.currentUser.id);
+
+    // Build recommended recipe 'sections' based on user preferences
+    var sections = [];    
+    if (_user) {
+        for (var i = 0; i < _user.homePreferences.length; i++) {
+            const title = `${_user.homePreferences[i]} recipes`;
+            const data  = await GetRecipes({ diet : _user.homePreferences[i] });
+            
+            var resultRecipes;
+            if (data.error) {
+                console.log(`${logHeadErr(req)} API request failed: ${data.error}`);
+            }
+            else {
+                console.log(`${logHead(req)} Data received from API!`);
+                
+                resultRecipes = data.hits;
+                // Loop through each returned element for processing:
+                resultRecipes.forEach(item => {
+                    // Trim "tags" array to have only 3 elements max:
+                    if (item.recipe.tags)
+                        item.recipe.tags.length = 3;
     
+                    // Add a recipeID key to the recipe object:
+                    item.recipe.recipeID = item.recipe.uri.split('#')[1];
+                });
+            }
+            
+            sections.push({ title : title, recipes : resultRecipes });
+        }
+    }
+
     // Render the 'main' (home) page to the browser:
     res.render('main', {
-        layout : 'index',
-        active : { home : true }
+        layout   : 'index',
+        active   : { home : true },
+        sections : sections
     });
 });
 
@@ -215,10 +254,11 @@ app.get('/logout', async(req, res) => {
 
 app.get('/account', async(req, res) => {
     const id = res.locals.currentUser.id;
-    console.log(id);
-    
+    const _user = await user.findById(id);
+
     res.render('account', {
-        layout : 'index'
+        layout    : 'index',
+        homePrefs : _user.homePreferences.toString()
     });
 });
 /*=====---------------------------^ APP ROUTES ^----------------------------=====*/

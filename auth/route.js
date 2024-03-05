@@ -9,8 +9,8 @@
 const express = require('express');
 
 // Include internal modules
-const { register, login } = require('./auth');
-const { adminAuth }       = require('../middleware/auth');
+const { register, login, update } = require('./auth');
+const { adminAuth } = require('../middleware/auth');
 
 // Create Express Router instance
 const router = express.Router();
@@ -22,7 +22,7 @@ router.use((req, res, next) => {
 
 router.route('/register').post(register);
 router.route('/login').post(login);
-//router.route('/update').put(adminAuth, update);
+router.route('/update').put(update);
 //router.route('/deleteUser').put(adminAuth, deleteUser);
 module.exports = router;
 /*===================================route.js====================================*/

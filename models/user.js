@@ -5,7 +5,10 @@
 /*===============================================================================*/
 
 /*====================================user.js====================================*/
-const mongoose   = require('mongoose');
+// Include external modules
+const mongoose = require('mongoose');
+
+// Define schema
 const userSchema = new mongoose.Schema({
     username : {
         type     : String,
@@ -21,9 +24,13 @@ const userSchema = new mongoose.Schema({
         type     : String,
         default  : 'basic',
         required : true
-    }
+    },
+    homePreferences : [{
+        type : String
+    }]
 });
 
+// Create and export model
 const user     = mongoose.model('user', userSchema);
 module.exports = user;
 /*====================================user.js====================================*/

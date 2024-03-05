@@ -128,6 +128,50 @@ exports.login = async (req, res, next) => {
     }
 };
 
-exports.update = async (req, res, next) => {};
+/*********************************************************************************/
+/* FUNC   : update                                                               */
+/* DESC   : Updates the `user` document that matches the ID to store the data    */
+/*          received from a form within the body of a page.                      */
+/* PARAMS : N/A.                                                                 */
+/* RETURN : A JSON response with status 201 if the user was successfully updated */
+/*          with the new values, or status 400 if the update attempt failed.     */
+/*********************************************************************************/
+exports.update = async (req, res, next) => {
+    const { id, homePreferences } = req.body;
+
+    // Check that the ID is not null
+    if (!id)
+        return res.status(400).json({
+            message : 'No user ID supplied',
+        });
+
+    // Get the user associated with the ID and update its values
+    await user.findById(id)
+        .then((_user) => {
+            // Update user with data received from body
+            if (homePreferences)
+                _user.homePreferences = homePreferences
+
+            // Save the updated user to the database
+            _user.save()
+                .then(res.status(201).json({
+                    message : 'User updated successfully',
+                    _user
+                }))
+                .catch((error) => {
+                    res.status(400).json({
+                        message : 'An error occurred',
+                        error   : error.message
+                    });
+                });
+        })
+        .catch((error) => {
+            res.status(400).json({
+                message : 'An error occurred',
+                error   : error.message
+            });
+        });
+};
+
 exports.deleteUser = async (req, res, next) => {};
 /*====================================auth.js====================================*/
