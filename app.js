@@ -107,6 +107,17 @@ async function GetRecipes(params) {
         });
 }
 
+async function GetRecipeByID(id) {
+    const endpoint = '/recipes/v2/' + id;
+    return instance.get(endpoint)
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            return { error : error };
+        });
+}
+
 /*********************************************************************************/
 /* FUNC   : ApiTest                                                              */
 /* DESC   : Sends an empty request to the Edamam Recipe Search API to confirm    */
@@ -232,6 +243,19 @@ app.get('/search', userAuth, async(req, res) => {
         results : resultRecipes,
         search  : params.q,
         active  : { search : true }
+    });
+});
+
+app.get('/recipe', async (req, res) => {
+    const recipeID = req.query.Id;
+    const recipe   = await GetRecipeByID(recipeID);
+
+    console.log(recipe);
+    console.log(recipe.recipe.totalNutrients);
+
+    res.render('recipe', {
+        layout : 'index',
+        recipe : recipe
     });
 });
 

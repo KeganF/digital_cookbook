@@ -2,7 +2,7 @@
 {{> nav this }}
 {{> search_area }}
 
-<div class="container">
+<div class="container mt-3 mb-3">
     <h2>Recommended for you</h2>
 
     {{#each sections}}
@@ -10,10 +10,10 @@
         
         <div class="d-flex" style="overflow-x:scroll; column-gap:1rem;">
             {{#each this.recipes}}
-                <div class="card flex-shrink-0" style="width:18rem;">
+                {{!-- <div class="card flex-shrink-0" style="width:18rem;">
                     <img class="card-img-top" src="{{recipe.image}}" alt="">
                     <div class="card-body d-flex flex-column justify-content-between">
-                        <a href="/recipe?ID={{recipe.recipeID}}"><h5 class="card-title">{{recipe.label}}</h5></a>
+                        <a href="/recipe?Id={{recipe.recipeID}}"><h5 class="card-title">{{recipe.label}}</h5></a>
                         
                         <div class="d-flex flex-wrap" style="gap:0.25rem;">
                         {{#each recipe.tags}}
@@ -21,15 +21,17 @@
                         {{/each}}
                         </div>
                     </div>
-                </div>
+                </div> --}}
+                {{> recipe_card recipe}}
             {{/each}}
         </div>
 
     {{/each}}
 
-    <span>
-        Want more recommendations? 
-        Try updating your homepage preferences in your account settings!
-    </span>
+    <div class="mt-3">
+        <span>Want more recommendations? Try updating your homepage preferences in your account settings! </span>
+    </div>
 </div>
+
+{{> footer}}
 {{!------------------------------------------------------------------------------}}

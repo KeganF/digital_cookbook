@@ -94,3 +94,60 @@ select {
     border-radius: 2rem;
     padding: 0.25rem 0.5rem 0.25rem 0.5rem;
 }
+
+/* Gradient background for places like the login and register forms */
+.gradient-background {
+    /* background: linear-gradient(45deg, #f1b76c, #e7c53c, #51d844, #46d256);
+	background-size: 200% 200%; */
+    overflow: hidden;
+    position: relative;
+	height: 100vh;
+}
+.gradient-background:before {
+    content: "";
+    position: absolute;
+    width: 120%;
+    height: 120%;
+    background: linear-gradient(45deg, #f1b76c, #e7c53c, #51d844, #34cc50);
+	background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+    opacity: 80%;
+}
+
+/* Styling for links that surround cards */
+.card-link {
+    text-decoration: none;
+}
+
+/* Override Bootstrap card-title class to cut-off long text */
+.card-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    /* white-space: nowrap;
+    text-overflow: ellipsis; */
+}
+
+/* Footer styling */
+.footer {
+    background: hsl(0, 0%, 90%);;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: hsl(0, 0%, 70%);
+}
+::-webkit-scrollbar-thumb {
+    background: hsl(0, 0%, 50%);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: hsl(0, 0%, 60%);
+}
