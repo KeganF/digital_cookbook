@@ -1,4 +1,9 @@
+/*===============================================================================*/
+/* FILE : style.css (./public/styles/style.css)                                  */
+/* DESC : This file contains custom and overridden Bootstrap CSS classes.        */
+/*===============================================================================*/
 
+/*===================================style.css===================================*/
 /* Override Bootstrap badge-primary class */
 .badge-primary {
     background-color: hsl(46, 100%, 50%);
@@ -151,3 +156,4 @@ select {
 ::-webkit-scrollbar-thumb:hover {
     background: hsl(0, 0%, 60%);
 }
+/*===================================style.css===================================*/

@@ -1,3 +1,9 @@
+/*===============================================================================*/
+/* FILE : register.js (./public/js/register.js)                                  */
+/* DESC : This file contains the javascript code to handle registering new users.*/
+/*===============================================================================*/
+
+/*=================================register.js===================================*/
 const form = document.querySelector('form');
 const email = document.querySelector('#email');
 const username = document.querySelector('#username');
@@ -23,3 +29,4 @@ form.addEventListener('submit', async(e) => {
         console.log(error.message);
     }
 });
+/*=================================register.js===================================*/

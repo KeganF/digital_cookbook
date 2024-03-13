@@ -1,3 +1,10 @@
+/*===============================================================================*/
+/* FILE : update.js (./public/js/update.js)                                      */
+/* DESC : This file contains the javasript code to handle updating user account  */
+/*        values.                                                                */
+/*===============================================================================*/
+
+/*==================================update.js====================================*/
 const form = document.querySelector('form');
 const homePref = document.querySelectorAll('input[type="checkbox"]');
 const display = document.querySelector('.error');
@@ -33,3 +40,4 @@ form.addEventListener('submit', async(e) => {
         console.log(error.message);
     }
 });
+/*==================================update.js====================================*/

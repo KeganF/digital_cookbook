@@ -1,4 +1,9 @@
-{{!------------------------------main.handlebars---------------------------------}}
+{{!==============================================================================}}
+{{! FILE : main.handlebars (./views/main.handlebars)                             }}
+{{! DESC : This file contains the markup for the main homepage.                  }}
+{{!==============================================================================}}
+
+{{!===============================main.handlebars================================}}
 {{> nav this }}
 {{> search_area }}
 
@@ -10,18 +15,6 @@
         
         <div class="d-flex" style="overflow-x:scroll; column-gap:1rem;">
             {{#each this.recipes}}
-                {{!-- <div class="card flex-shrink-0" style="width:18rem;">
-                    <img class="card-img-top" src="{{recipe.image}}" alt="">
-                    <div class="card-body d-flex flex-column justify-content-between">
-                        <a href="/recipe?Id={{recipe.recipeID}}"><h5 class="card-title">{{recipe.label}}</h5></a>
-                        
-                        <div class="d-flex flex-wrap" style="gap:0.25rem;">
-                        {{#each recipe.tags}}
-                            <span class="badge badge-primary">{{this}}</span>
-                        {{/each}}
-                        </div>
-                    </div>
-                </div> --}}
                 {{> recipe_card recipe}}
             {{/each}}
         </div>
@@ -29,9 +22,9 @@
     {{/each}}
 
     <div class="mt-3">
-        <span>Want more recommendations? Try updating your homepage preferences in your account settings! </span>
+        <span>Want more recommendations? Try updating your homepage preferences in your account settings!</span>
     </div>
 </div>
 
 {{> footer}}
-{{!------------------------------------------------------------------------------}}
+{{!===============================main.handlebars================================}}

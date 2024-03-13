@@ -90,7 +90,7 @@ const instance = axios.create({
 /*=====--------------------------v API FUNCTIONS v--------------------------=====*/
 /*********************************************************************************/
 /* FUNC   : GetRecipes                                                           */
-/* DESC   : Sends a request to the Edamam Recipe search API.                     */
+/* DESC   : Sends a request to the Edamam Recipe Search API.                     */
 /* PARAMS : params (Object) -> an object containing the parameters for the API   */
 /*              request. This typically contains truthy values from the 'search' */
 /*              route's query string.                                            */
@@ -107,6 +107,15 @@ async function GetRecipes(params) {
         });
 }
 
+/*********************************************************************************/
+/* FUNC   : GetRecipeByID                                                        */
+/* DESC   : Sends a request to the Edamam Recipe Search API for the provided ID. */
+/* PARAMS : id (string) -> a string representing a specific recipe ID. The ID is */
+/*              a recognized identifier provided by the API service, which can   */
+/*              be used to identify a specific recipe.                           */                                                                 
+/* RETURN : The data portion of the JSON response returned from the API, or the  */
+/*          the Axios error object in the event of a failed request.             */
+/*********************************************************************************/
 async function GetRecipeByID(id) {
     const endpoint = '/recipes/v2/' + id;
     return instance.get(endpoint)
@@ -246,6 +255,10 @@ app.get('/search', userAuth, async(req, res) => {
     });
 });
 
+/*********************************************************************************/
+/* ROUTE : GET '/recipe'                                                         */
+/* DESC  : Renders the recipe page.                                              */
+/*********************************************************************************/
 app.get('/recipe', async (req, res) => {
     const recipeID = req.query.Id;
     const recipe   = await GetRecipeByID(recipeID);
@@ -259,23 +272,39 @@ app.get('/recipe', async (req, res) => {
     });
 });
 
+/*********************************************************************************/
+/* ROUTE : GET '/register'                                                       */
+/* DESC  : Renders the register page.                                            */
+/*********************************************************************************/
 app.get('/register', async(req, res) => {
     res.render('register', {
         layout : 'index'
     });
 });
 
+/*********************************************************************************/
+/* ROUTE : GET '/login'                                                          */
+/* DESC  : Renders the login page.                                               */
+/*********************************************************************************/
 app.get('/login', async(req, res) => {
     res.render('login', {
         layout : 'index'
     });
 });
 
+/*********************************************************************************/
+/* ROUTE : GET '/logout'                                                         */
+/* DESC  : Logs the user out and returns them to the '/' route.                  */
+/*********************************************************************************/
 app.get('/logout', async(req, res) => {
     res.cookie('jwt', '', { maxAge : '1' });
     res.redirect('/');
 });
 
+/*********************************************************************************/
+/* ROUTE : GET '/account'                                                        */
+/* DESC  : Renders the account page.                                             */
+/*********************************************************************************/
 app.get('/account', async(req, res) => {
     const id = res.locals.currentUser.id;
     const _user = await user.findById(id);

@@ -1,3 +1,10 @@
+/*===============================================================================*/
+/* FILE : login.js (./public/js/login.js)                                        */
+/* DESC : This file contains the javascript code to handle logging in existing   */
+/*        users.                                                                 */
+/*===============================================================================*/
+
+/*==================================login.js=====================================*/
 const form = document.querySelector('form');
 const username = document.querySelector('#username');
 const password = document.querySelector('#password');
@@ -22,3 +29,4 @@ form.addEventListener('submit', async(e) => {
         console.log(error.message);
     }
 });
+/*==================================login.js=====================================*/
