@@ -53,7 +53,9 @@ app.engine('handlebars', handlebars.engine({
     layoutsDir      : __dirname + '/views/layouts',
     partialsDir     : __dirname + '/views/partials',
     helpers         : {
-        includes : function(needle, haystack) { return haystack.indexOf(needle) > -1; }
+        includes : function(needle, haystack) { return haystack.indexOf(needle) > -1; },
+        round    : function(precision_value) { return Math.round(precision_value); },
+        divide   : function(n1, n2) { return Math.round(n1/n2); }
     }
 }));
 app.set('view engine', 'handlebars');
@@ -268,7 +270,24 @@ app.get('/recipe', async (req, res) => {
 
     res.render('recipe', {
         layout : 'index',
-        recipe : recipe
+        recipe : recipe.recipe,
+        active  : { search : true }
+    });
+});
+
+/*********************************************************************************/
+/* ROUTE : GET '/collections'                                                    */
+/* DESC  : Renders the collections page.                                         */
+/*********************************************************************************/
+app.get('/collections', async(req, res) => {
+    var _user = null;
+    if (res.locals.currentUser)
+        _user = await user.findById(res.locals.currentUser.id);
+    
+    res.render('collections', {
+        layout : 'index',
+        user   : _user,
+        active  : { search : true }
     });
 });
 

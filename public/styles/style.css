@@ -4,9 +4,21 @@
 /*===============================================================================*/
 
 /*===================================style.css===================================*/
+/* Styling for the application's "logo" */
+.logo-text {
+    color:hsl(0, 0%, 0%);
+    text-decoration: none;
+    font-size: 1.25rem;
+}
+
 /* Override Bootstrap badge-primary class */
 .badge-primary {
     background-color: hsl(46, 100%, 50%);
+}
+
+/* Override Bootstrap badge-primary class */
+.badge-danger {
+    background-color: hsl(0, 80%, 60%);
 }
 
 /* Override Bootstrap btn-primary class */

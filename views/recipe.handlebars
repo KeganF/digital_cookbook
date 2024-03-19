@@ -4,5 +4,93 @@
 {{!==============================================================================}}
 
 {{!==============================recipe.handlebars===============================}}
+{{> nav this}}
 
+<div class="container-fluid d-flex justify-content-center align-items-center gradient-background" style="height:16rem; overflow:hidden;">
+    <h2>{{recipe.label}}</h2>
+</div>
+
+<div class="container d-flex flex-column align-items-center mt-3">
+    <span>
+        This recipe is sourced from {{recipe.source}}.
+        To see the full list of ingredients and preparation steps, <a href="{{recipe.url}}">click here!</a>
+    </span>
+
+    <div class="d-flex mt-3" style="gap:1rem;">
+        {{! Recipe Information }}
+        <div class="card p-3" style="width:30rem;row-gap:1rem;">
+            <h3 class="text-center">Recipe Information</h3>
+            <div class="card flex-row p-2 mt-2 mb-2" style="gap:1rem;">
+                <img src="{{recipe.image}}" class="border rounded shadow-sm" style="width:10rem;height:10rem;object-fit:cover;object-position:center;">
+                <div>
+                    <p style="text-transform:capitalize"><span class="fw-bold">Cuisine:</span> {{recipe.cuisineType}}</p>
+                    <p style="text-transform:capitalize"><span class="fw-bold">Meal Type:</span> {{recipe.mealType}}</p>
+                    <p style="text-transform:capitalize"><span class="fw-bold">Dish Type:</span> {{recipe.dishType}}</p>
+                    <p style="text-transform:capitalize"><span class="fw-bold">Recipe Yield:</span> {{recipe.yield}}</p>
+                </div>
+            </div>
+            
+            <div>
+                <h4>Diet Labels</h4>
+                <div class="d-flex flex-wrap" style="gap:0.25rem;">
+                    {{#if recipe.dietLabels}}
+                        {{#each recipe.dietLabels}}
+                            <span class="badge badge-primary">{{this}}</span>
+                        {{/each}}
+                    {{else}}
+                        <p>No diet labels provided.</p>
+                    {{/if}}
+                </div>
+            </div>
+
+            <div>
+                <h4>Cautions</h4>
+                <div class="d-flex flex-wrap" style="gap:0.25rem;">
+                    {{#if recipe.cautions}}
+                        {{#each recipe.cautions}}
+                            <span class="badge badge-danger">{{this}}</span>
+                        {{/each}}
+                    {{else}}
+                        <p>No cautionary labels provided.</p>
+                    {{/if}}
+                </div>
+            </div>
+            
+            <div>
+                <h4>Ingredients</h4>
+                <ul>
+                    {{#each recipe.ingredientLines}}
+                        <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+        {{! Nutrition Analysis }}
+        <div class="card p-3" style="width:30rem;">
+            <h3 class="text-center">Nutrition Analysis</h3>
+            <p style="text-transform:capitalize"><span class="fw-bold">Total Calories:</span> {{round recipe.calories}}</p>
+            <p style="text-transform:capitalize"><span class="fw-bold">Calories per Serving:</span> {{divide recipe.calories recipe.yield}} ({{round recipe.calories}} total / {{recipe.yield}} yield)</p>
+            <div style="height:35rem;overflow-y:scroll">
+                <table class="table table-striped">
+                    <thead>
+                        <th>Label</th>
+                        <th>Quantity</th>
+                        <th>Units</th>
+                    </thead>
+                    <tbody>
+                        {{#each recipe.totalNutrients}}
+                            <tr>
+                                <td>{{this.label}}</td>
+                                <td>{{round this.quantity}}</td>
+                                <td>{{this.unit}}</td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> footer}}
 {{!==============================recipe.handlebars===============================}}
