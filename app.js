@@ -287,7 +287,7 @@ app.get('/collections', async(req, res) => {
     res.render('collections', {
         layout : 'index',
         user   : _user,
-        active  : { search : true }
+        active  : { collections : true }
     });
 });
 
