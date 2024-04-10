@@ -200,6 +200,29 @@ app.get('/', async(req, res) => {
             sections.push({ title : title, recipes : resultRecipes });
         }
     }
+    // If the user is not logged in, display 'balanced' recipes by default
+    else {
+        const title = 'Balanced recipes';
+        const data  = await GetRecipes({ diet : 'balanced' });
+
+        var resultRecipes;
+        if (data.error) {
+            console.log(`${logHeadErr(req)} API request failed: ${data.error}`);
+        }
+        else {
+            console.log(`${logHead(req)} Data received from API!`);
+                
+            resultRecipes = data.hits;
+            resultRecipes.forEach(item => {
+                if (item.recipe.tags)
+                    item.recipe.tags.length = 3;
+
+                item.recipe.recipeID = item.recipe.uri.split('#')[1];
+            });
+        }
+
+        sections.push({ title : title, recipes : resultRecipes });
+    }
 
     // Render the 'main' (home) page to the browser:
     res.render('main', {
@@ -213,7 +236,7 @@ app.get('/', async(req, res) => {
 /* ROUTE : GET '/search'                                                         */
 /* DESC  : Renders the recipe search page.                                       */
 /*********************************************************************************/
-app.get('/search', userAuth, async(req, res) => {
+app.get('/search', async(req, res) => {
     console.log(`${logHead(req)} Route has been requested.`);
 
     // Get a list of parameters from the query string,
@@ -276,22 +299,6 @@ app.get('/recipe', async (req, res) => {
 });
 
 /*********************************************************************************/
-/* ROUTE : GET '/collections'                                                    */
-/* DESC  : Renders the collections page.                                         */
-/*********************************************************************************/
-app.get('/collections', async(req, res) => {
-    var _user = null;
-    if (res.locals.currentUser)
-        _user = await user.findById(res.locals.currentUser.id);
-    
-    res.render('collections', {
-        layout : 'index',
-        user   : _user,
-        active  : { collections : true }
-    });
-});
-
-/*********************************************************************************/
 /* ROUTE : GET '/register'                                                       */
 /* DESC  : Renders the register page.                                            */
 /*********************************************************************************/
@@ -307,7 +314,8 @@ app.get('/register', async(req, res) => {
 /*********************************************************************************/
 app.get('/login', async(req, res) => {
     res.render('login', {
-        layout : 'index'
+        layout : 'index',
+        active : { login : true }
     });
 });
 
@@ -330,7 +338,8 @@ app.get('/account', async(req, res) => {
 
     res.render('account', {
         layout    : 'index',
-        homePrefs : _user.homePreferences.toString()
+        homePrefs : _user.homePreferences.toString(),
+        active    : { account : true }
     });
 });
 /*=====---------------------------^ APP ROUTES ^----------------------------=====*/
