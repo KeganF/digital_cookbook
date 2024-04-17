@@ -1,7 +1,7 @@
 /*===============================================================================*/
 /* PROJECT : Digital Cookbook                                                    */
 /* AUTHOR  : Kegan Ferdiand                                                      */
-/* DATES   : 2024-01-29 - []                                                     */
+/* DATES   : 2024-01-29 - 2024-04-18                                             */
 /* DESC    : This project was created as part of CIS320 and CIS354, where I was  */
 /*           tasked with first designing and then implementing a project of my   */ 
 /*           choice.                                                             */
